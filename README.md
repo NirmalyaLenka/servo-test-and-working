@@ -54,9 +54,10 @@ Signal (Orange/Yellow)  →  GPIO 18
 VCC    (Red)            →  5V (external supply recommended)
 GND    (Brown/Black)    →  GND (shared with ESP32 GND)
 ```
-<img width="474" height="458" alt="image" src="https://github.com/user-attachments/assets/e67953eb-0290-41b0-90d1-80b893e7a299" />https://components101.com/sites/default/files/component_pin/MG90S-Wiring-Diagram.png
+<img width="474" height="458" alt="image" src="https://github.com/user-attachments/assets/e67953eb-0290-41b0-90d1-80b893e7a299" /> 
 
-### Wiring Diagram
+### Wiring Diagram<img width="600" height="316" alt="image" src="https://github.com/user-attachments/assets/ce81415a-44c8-4d97-8d6c-6c0e01e2aee6" />
+
 
 ```
                     ┌──────────────────┐
