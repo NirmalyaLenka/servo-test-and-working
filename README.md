@@ -232,6 +232,40 @@ Pull requests are welcome! If you find a bug or want to add a new test mode, fee
 
 ---
 
+## Skills & technologies
+
+[![C++](https://img.shields.io/badge/C%2B%2B-cpp?logo=C%2B%2B&logoColor=white)](https://github.com/NirmalyaLenka/servo-test-and-working) · [![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)](https://github.com/NirmalyaLenka/servo-test-and-working)
+
+
+## Repository structure
+
+Key files and folders (not an exhaustive listing):
+
+- `ATtiny85_SG90_RapidAngleTest.ino`
+- `ArduinoMega2560_SG90_RapidAngleTest.ino`
+- `ArduinoNano_SG90_RapidAngleTest.ino`
+- `ArduinoProMini_SG90_RapidAngleTest.ino`
+- `ArduinoUno_SG90_RapidAngleTest.ino`
+- `ESP32-C3_SG90_RapidAngleTest.ino`
+- `NodeMCU_ESP8266_SG90_RapidAngleTest.ino`
+- `README.md`
+- `RaspberryPi4B_SG90_RapidAngleTest.py`
+- `RaspberryPiPicoW_SG90_RapidAngleTest.py`
+- `RaspberryPiPico_SG90_RapidAngleTest.py`
+- `STM32BluePill_SG90_RapidAngleTest.ino`
+- `SeeedXIAO_ESP32S3_SG90_RapidAngleTest.ino`
+- `Teensy40_SG90_RapidAngleTest.ino`
+- `WemosD1Mini_SG90_RapidAngleTest.ino`
+- `happy_birthday_sg90.ino`
+- `rapid_angle_test.ino`
+- `servo_test.ino`
+
+
+## How it works
+
+The firmware entry point is `ATtiny85_SG90_RapidAngleTest.ino`. Open the sketch in Arduino IDE, select the matching board and serial port, verify the pin mapping and required libraries, then compile and upload. Hardware behaviour must be validated on the actual board; a README alone does not prove the circuit is safe or working.
+
+
 ## Maintenance & Audit
 
 - **Audit date:** 10 November 2026
