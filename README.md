@@ -1,275 +1,130 @@
-# servo-test-and-working
-# 🤖 ESP32 Servo Motor Test
+# Hobby Servo Test Bench — SG90 and Compatible Servos
 
-A clean, well-commented Arduino sketch to test and calibrate servo motors with an **ESP32** microcontroller. Includes three test modes: fixed positions, center calibration, and a smooth full-range sweep.
+A collection of small firmware examples for checking hobby servo movement, pulse-width settings, and board-specific control. The primary sketch, `servo_test.ino`, targets an ESP32 and uses the ESP32Servo library. Other files provide board-specific variants and a separate SG90 demonstration.
 
----
+## What is included
 
-## 📋 Table of Contents
+- Center positioning and fixed-angle tests
+- A slow sweep through the commanded angle range
+- A rapid angle-change sequence
+- Board-specific examples for Arduino, ESP32/ESP8266, STM32, Teensy, ATtiny, and Raspberry Pi boards
 
-- [Features](#features)
-- [Hardware Requirements](#hardware-requirements)
-- [Wiring](#wiring)
-- [Software Requirements](#software-requirements)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Test Modes](#test-modes)
-- [Configuration](#configuration)
-- [Troubleshooting](#troubleshooting)
-- [License](#license)
+A commanded angle is not a calibrated mechanical angle. Servo travel and pulse limits vary by unit; start conservatively and stop if the servo binds, buzzes continuously, or heats up.
 
----
+## Hardware and power
 
-## ✨ Features
+For a basic ESP32 + SG90 test:
 
-- ✅ Smooth sweep from 0° → 180° → 0°
-- ✅ Snap to fixed positions (0°, 45°, 90°, 135°, 180°)
-- ✅ Center calibration mode (90°)
-- ✅ Serial Monitor logging for real-time feedback
-- ✅ Configurable pulse width (supports most hobby servos)
-- ✅ Safety angle clamping to protect the servo
+- ESP32 development board
+- SG90 or compatible hobby servo
+- Separate regulated 5 V supply with adequate current for the servo
+- Three jumper wires
+- USB data cable; breadboard optional
 
----
+**Power rule:** Do not power a loaded servo from an ESP32 GPIO or 3.3 V pin. Use a suitable external servo supply and connect its ground to ESP32 GND so the signal has a shared reference. Size the supply for the servo's stall/current demand; larger servos such as MG996R need substantially more current than an SG90. Do not connect a supply's positive output to the ESP32 3V3 pin.
 
-## 🛒 Hardware Requirements
+## Wiring — primary ESP32 sketch
 
-| Component | Quantity |
-|---|---|
-| ESP32 Dev Board | 1 |
-| Hobby Servo Motor (SG90, MG996R, etc.) | 1 |
-| External 5V Power Supply *(recommended)* | 1 |
-| Jumper Wires | 3 |
-| Breadboard *(optional)* | 1 |
+| Servo lead | ESP32 / supply |
+| --- | --- |
+| Signal (often orange/yellow) | GPIO 18 |
+| V+ (often red) | External regulated 5 V supply |
+| GND (often brown/black) | Supply GND and ESP32 GND joined together |
 
-> ⚠️ **Power Note:** Servo motors can draw significant current (especially under load). Powering the servo directly from the ESP32's 5V/VIN pin may cause voltage drops and ESP32 resets. Use a dedicated 5V supply when possible.
+Wire colors are common conventions, not a substitute for the servo's datasheet.
 
----
+## Current prototype BOM
 
-## 🔌 Wiring
+| Item | Quantity | Notes |
+| --- | ---: | --- |
+| ESP32 development board | 1 | Primary target of `servo_test.ino` |
+| SG90 micro servo | 1 | Test one servo at a time |
+| Regulated 5 V supply | 1 | Choose current capacity for the servo and load |
+| Jumper wires | 3 | Signal, V+, and ground connections |
+| USB data cable | 1 | Programming and Serial Monitor |
+| 100–470 µF electrolytic capacitor | 1, optional | Across servo supply near the servo; observe polarity and voltage rating |
+| Breadboard | 1, optional | Signal connections only; avoid routing high servo current through weak breadboard rails |
 
-```
-Servo Motor         ESP32
-──────────────────────────────────────
-Signal (Orange/Yellow)  →  GPIO 18
-VCC    (Red)            →  5V (external supply recommended)
-GND    (Brown/Black)    →  GND (shared with ESP32 GND)
-```
-<img width="474" height="458" alt="image" src="https://github.com/user-attachments/assets/e67953eb-0290-41b0-90d1-80b893e7a299" /> 
+This is a bench-test BOM, not a complete robotics power system. If the servo stalls or resets the controller, improve the supply and wiring before changing software.
 
-### Wiring Diagram
-<img width="600" height="316" alt="image" src="https://github.com/user-attachments/assets/ce81415a-44c8-4d97-8d6c-6c0e01e2aee6" />
+## Software setup
 
+For the primary ESP32 sketch:
 
-```
-                    ┌──────────────────┐
-                    │      ESP32       │
-  ┌─────────────┐   │                  │
-  │ Servo Motor │   │  GPIO 18 ────────┼──── Signal (Orange)
-  │             │   │                  │
-  │  VCC (Red)──┼───┼── 5V (Ext.)      │
-  │  GND (Blk)──┼───┼── GND ───────────┼──── GND (shared)
-  └─────────────┘   └──────────────────┘
-```
+1. Install the [Arduino IDE](https://www.arduino.cc/en/software).
+2. Install ESP32 board support using Espressif's package URL:
+   `https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json`
+3. Install **ESP32Servo** from Library Manager.
+4. Open `servo_test.ino`, select the correct ESP32 board and port, then compile and upload.
+5. Open Serial Monitor at **115200 baud**.
 
----
+Other examples have different requirements. Read the header comments in the exact file before building: Python Raspberry Pi examples use GPIO libraries, Pico examples use MicroPython, and the ATtiny85 example uses Servo8Bit.
 
-## 💾 Software Requirements
+## Main sketch configuration
 
-- [Arduino IDE](https://www.arduino.cc/en/software) 1.8+ or 2.x
-- **ESP32 Board Package** for Arduino IDE
-- **ESP32Servo** library
-
----
-
-## 🚀 Installation
-
-### 1. Add ESP32 Board Support
-
-In Arduino IDE, go to **File → Preferences** and add this URL to *Additional Board Manager URLs*:
-
-```
-https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
-```
-
-Then go to **Tools → Board → Boards Manager**, search for `esp32`, and install the package by Espressif Systems.
-
-### 2. Install ESP32Servo Library
-
-Go to **Tools → Manage Libraries**, search for **ESP32Servo**, and click Install.
-
-### 3. Clone This Repository
-
-```bash
-git clone https://github.com/your-username/esp32-servo-test.git
-cd esp32-servo-test
-```
-
-### 4. Open the Sketch
-
-Open `servo_test.ino` in the Arduino IDE.
-
-### 5. Select Your Board
-
-Go to **Tools → Board** and select your ESP32 board (e.g., *ESP32 Dev Module*).
-
-### 6. Upload
-
-Connect your ESP32 via USB, select the correct **Port**, and click **Upload** (→).
-
----
-
-## 🖥️ Usage
-
-After uploading, open the **Serial Monitor** at **115200 baud** to watch the test output in real time:
-
-```
-=================================
-  ESP32 Servo Motor Test
-=================================
-Servo attached to GPIO 18
-
-[Test] Center Position (90°)
-  Servo position set to: 90°
-
-[Test] Fixed Positions
-  -> Moving to: 0°
-  Servo position set to: 0°
-  -> Moving to: 45°
-  Servo position set to: 45°
-  ...
-
-[Test] Full Sweep (0° → 180° → 0°)
-  Sweeping forward...
-  Sweeping backward...
-  Sweep complete.
-
---- All tests complete. Restarting in 3s ---
-```
-
----
-
-## 🧪 Test Modes
-
-The sketch has three test modes. You can enable or disable each one by **commenting/uncommenting** the `#define` lines near the top of the file:
+The ESP32 test sketch defines these defaults near the top of `servo_test.ino`:
 
 ```cpp
-#define TEST_SWEEP           // Full 0°–180°–0° sweep
-#define TEST_FIXED_POSITIONS // Snap to fixed positions
-#define TEST_CENTER          // Center calibration (90°)
+#define SERVO_PIN       18
+#define SERVO_MIN_US   500
+#define SERVO_MAX_US  2400
+#define STEP_DELAY_MS   15
+#define HOLD_DELAY_MS 1000
 ```
 
-| Mode | Description |
-|---|---|
-| `TEST_CENTER` | Moves servo to exactly 90° — useful for calibrating horn/arm attachment |
-| `TEST_FIXED_POSITIONS` | Snaps to 0°, 45°, 90°, 135°, 180° with a pause at each |
-| `TEST_SWEEP` | Slowly sweeps the full range (0° → 180° → 0°) to check for jitter or binding |
+These pulse limits are not universal. Begin with a conservative range supported by the servo's documentation, then expand carefully if needed. Hitting mechanical end stops can damage gears or overheat the motor.
 
----
+## Repository map
 
-## ⚙️ Configuration
-
-All key parameters are defined at the top of the sketch for easy adjustment:
-
-```cpp
-#define SERVO_PIN      18    // GPIO pin (change if needed)
-#define SERVO_MIN_US   500   // Pulse width for 0°  (microseconds)
-#define SERVO_MAX_US  2400   // Pulse width for 180° (microseconds)
-#define STEP_DELAY_MS   15   // Speed of sweep (lower = faster)
-#define HOLD_DELAY_MS 1000   // Pause time at each fixed position (ms)
+```text
+servo-test-and-working/
+├── servo_test.ino                         # Primary ESP32 test
+├── rapid_angle_test.ino                   # ESP32 rapid movement sequence
+├── happy_birthday_sg90.ino                # Separate servo demo
+├── ATtiny85_SG90_RapidAngleTest.ino       # ATtiny85 / Servo8Bit
+├── ArduinoUno_SG90_RapidAngleTest.ino     # Arduino Uno
+├── ArduinoNano_SG90_RapidAngleTest.ino    # Arduino Nano
+├── ArduinoMega2560_SG90_RapidAngleTest.ino# Arduino Mega 2560
+├── ArduinoProMini_SG90_RapidAngleTest.ino # Arduino Pro Mini
+├── ESP32-C3_SG90_RapidAngleTest.ino       # ESP32-C3
+├── NodeMCU_ESP8266_SG90_RapidAngleTest.ino# ESP8266 NodeMCU
+├── WemosD1Mini_SG90_RapidAngleTest.ino    # Wemos D1 mini
+├── STM32BluePill_SG90_RapidAngleTest.ino  # STM32 Blue Pill
+├── SeeedXIAO_ESP32S3_SG90_RapidAngleTest.ino # XIAO ESP32-S3
+├── Teensy40_SG90_RapidAngleTest.ino       # Teensy 4.0
+├── RaspberryPi4B_SG90_RapidAngleTest.py   # Raspberry Pi GPIO / Python
+├── RaspberryPiPico_SG90_RapidAngleTest.py # Raspberry Pi Pico / MicroPython
+├── RaspberryPiPicoW_SG90_RapidAngleTest.py# Raspberry Pi Pico W / MicroPython
+└── README.md                              # Setup, power, file map, and limitations
 ```
 
-> 💡 **Tip:** Different servo brands have different pulse ranges. If your servo doesn't reach full travel or makes noise at extremes, adjust `SERVO_MIN_US` and `SERVO_MAX_US`.
+Each Arduino sketch is a separate alternative. Before reorganizing these files into folders, place each sketch in a directory matching its primary `.ino` filename so it opens cleanly in Arduino IDE.
 
-### Common Servo Pulse Ranges
+## Troubleshooting
 
-| Servo | Min (µs) | Max (µs) |
-|---|---|---|
-| SG90 (Tower Pro) | 500 | 2400 |
-| MG996R | 600 | 2200 |
-| DS3218 | 500 | 2500 |
-| Standard (generic) | 1000 | 2000 |
+| Symptom | Likely cause / check |
+| --- | --- |
+| Servo jitters or ESP32 resets | Supply current, shared ground, and wiring; use a separate servo supply |
+| Servo does not move | Signal pin, board selection, correct library, and servo power |
+| Servo buzzes at an endpoint | Pulse range exceeds the servo's mechanical travel; reduce min/max limits |
+| Movement is reversed | Servo orientation or mechanical linkage; do not assume all assemblies are identical |
+| Python example cannot access GPIO | Install the library for the exact Raspberry Pi OS/Python environment and check permissions |
 
----
+## Limitations
 
-## 🛠️ Troubleshooting
+- These sketches are open-loop tests; there is no position feedback from the servo.
+- A reported angle is the commanded angle, not a measured shaft position.
+- No universal pulse-width calibration is valid for every SG90 clone or other servo.
+- Power and mechanical safety must be validated on the actual setup.
 
-| Problem | Likely Cause | Solution |
-|---|---|---|
-| Servo jitters or twitches | Insufficient power | Use external 5V supply |
-| Servo doesn't move at all | Wrong pin or library | Check pin number, reinstall ESP32Servo |
-| Servo only moves partially | Wrong pulse range | Adjust `SERVO_MIN_US` / `SERVO_MAX_US` |
-| ESP32 keeps resetting | Servo drawing too much current | Use external supply, add 100µF capacitor across servo power |
-| No Serial Monitor output | Wrong baud rate | Set Serial Monitor to 115200 baud |
-| Upload fails | Wrong board selected | Set Tools → Board → ESP32 Dev Module |
+## Skills and technologies
 
----
+`Embedded C++` · `MicroPython` · `ESP32` · `Arduino` · `PWM` · `Servo control` · `Power integrity`
 
-## 📁 Project Structure
+## Maintenance & audit
 
-```
-esp32-servo-test/
-│
-├── servo_test.ino   # Main Arduino sketch
-└── README.md        # This file
-```
-
----
-
-## 📄 License
-
-This project is released under the [MIT License](https://opensource.org/licenses/MIT). Feel free to use, modify, and distribute it.
-
----
-
-## 🙌 Contributing
-
-Pull requests are welcome! If you find a bug or want to add a new test mode, feel free to open an issue or submit a PR.
-
----
-
-*Built with ❤️ for the ESP32 maker community*
-
-
----
-
-## Skills & technologies
-
-[![C++](https://img.shields.io/badge/C%2B%2B-cpp?logo=C%2B%2B&logoColor=white)](https://github.com/NirmalyaLenka/servo-test-and-working) · [![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)](https://github.com/NirmalyaLenka/servo-test-and-working)
-
-
-## Repository structure
-
-Key files and folders (not an exhaustive listing):
-
-- `ATtiny85_SG90_RapidAngleTest.ino`
-- `ArduinoMega2560_SG90_RapidAngleTest.ino`
-- `ArduinoNano_SG90_RapidAngleTest.ino`
-- `ArduinoProMini_SG90_RapidAngleTest.ino`
-- `ArduinoUno_SG90_RapidAngleTest.ino`
-- `ESP32-C3_SG90_RapidAngleTest.ino`
-- `NodeMCU_ESP8266_SG90_RapidAngleTest.ino`
-- `README.md`
-- `RaspberryPi4B_SG90_RapidAngleTest.py`
-- `RaspberryPiPicoW_SG90_RapidAngleTest.py`
-- `RaspberryPiPico_SG90_RapidAngleTest.py`
-- `STM32BluePill_SG90_RapidAngleTest.ino`
-- `SeeedXIAO_ESP32S3_SG90_RapidAngleTest.ino`
-- `Teensy40_SG90_RapidAngleTest.ino`
-- `WemosD1Mini_SG90_RapidAngleTest.ino`
-- `happy_birthday_sg90.ino`
-- `rapid_angle_test.ino`
-- `servo_test.ino`
-
-
-## How it works
-
-The firmware entry point is `ATtiny85_SG90_RapidAngleTest.ino`. Open the sketch in Arduino IDE, select the matching board and serial port, verify the pin mapping and required libraries, then compile and upload. Hardware behaviour must be validated on the actual board; a README alone does not prove the circuit is safe or working.
-
-
-## Maintenance & Audit
-
-- **Audit date:** 10 November 2026
-- **Documentation status:** README reviewed and audit record added on this date.
-- **Scope and evidence:** This entry records a documentation-level maintenance pass. It does not by itself establish that source code compiles, dependencies are current, security has been tested, or hardware/runtime behavior has been verified.
-- **Code and tests:** No new functional code changes or test results are claimed by this README update. Run the project-specific build, test, and hardware/runtime checks before relying on it.
-- **Maintenance baseline:** Documentation status recorded through 10 November 2026; revisit dependencies, setup instructions, known limitations, and tests whenever the project changes.
+- **Last updated:** 10 November 2026
+- **Review scope:** File paths, primary entry point, setup steps, servo power safety, and current BOM.
+- **Documentation changes:** Corrected the primary-sketch guidance, removed the placeholder clone URL, and made the external servo supply/common-ground requirements explicit.
+- **Firmware status:** No firmware changes were made. The board variants have not been compiled or hardware-tested during this pass.
+- **License:** No `LICENSE` file was found in the root listing; no specific reuse license is claimed here.
