@@ -123,7 +123,7 @@ Each Arduino sketch is a separate alternative. Before reorganizing these files i
 
 ## Maintenance & audit
 
-- **Last updated:** 10 November 2026
+- **Last updated:** 11 November 2026
 - **Review scope:** File paths, primary entry point, setup steps, servo power safety, and current BOM.
 - **Documentation changes:** Corrected the primary-sketch guidance, removed the placeholder clone URL, and made the external servo supply/common-ground requirements explicit.
 - **Firmware status:** No firmware changes were made. The board variants have not been compiled or hardware-tested during this pass.
