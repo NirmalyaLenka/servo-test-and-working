@@ -127,6 +127,6 @@ Each Arduino sketch is a separate alternative. Before reorganizing these files i
 
 - **Last updated:** 15 November 2026
 - **Review scope:** File paths, primary entry point, setup steps, servo power safety, and current BOM.
-- **Documentation changes:** Corrected the primary-sketch guidance, removed the placeholder clone URL, and made the external servo supply/common-ground requirements explicit.
+- **Documentation changes:** Corrected the primary-sketch guidance, removed the placeholder clone URL, made external servo supply/common-ground requirements explicit, and added a warning about the Pico variant's conflicting 3.3 V servo-supply note.
 - **Firmware status:** No firmware changes were made. The board variants have not been compiled or hardware-tested during this pass.
 - **License:** No `LICENSE` file was found in the root listing; no specific reuse license is claimed here.
