@@ -23,6 +23,8 @@ For a basic ESP32 + SG90 test:
 
 **Power rule:** Do not power a loaded servo from an ESP32 GPIO or 3.3 V pin. Use a suitable external servo supply and connect its ground to ESP32 GND so the signal has a shared reference. Size the supply for the servo's stall/current demand; larger servos such as MG996R need substantially more current than an SG90. Do not connect a supply's positive output to the ESP32 3V3 pin.
 
+**Variant-specific caution:** `RaspberryPiPico_SG90_RapidAngleTest.py` currently lists the Pico 3V3 rail as an alternative servo supply. Do not treat that as a recommended power connection. Check the exact servo's rated voltage and current, use a suitable regulated servo supply, and connect the supply ground to the controller ground. The firmware file was left unchanged.
+
 ## Wiring — primary ESP32 sketch
 
 | Servo lead | ESP32 / supply |
